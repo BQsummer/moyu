@@ -14,18 +14,64 @@ import java.util.Map;
 
 public class HttpUtil {
 
-    public static <T> List<T> httpGet(String url, Map<String, String> param, Class<T> type) {
+    /**
+     * 请求api，并反序列成对应的类的list
+     *
+     * @param url   url
+     * @param param 参数
+     * @param type  对应的类
+     * @param <T>   泛型
+     * @return list<T>
+     */
+    public static <T> List<T> httpGetList(String url, Map<String, String> param, Class<T> type) {
+        String result = httpRequest(url, param);
+        // convert json to object
+        if(StringUtils.isNotBlank(result)) {
+            return JSON.parseObject(result, new TypeReference<List<T>>(type) {});
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 请求api，并反序列成对应类
+     *
+     * @param url   url
+     * @param param url的参数
+     * @param type  对应的类
+     * @param <T>   泛型
+     * @return T
+     */
+    public static <T> T httpGet(String url, Map<String, String> param, Class<T> type) {
+        String result = httpRequest(url, param);
+        // convert json to object
+        if (StringUtils.isNotBlank(result)) {
+            return JSON.parseObject(result, new TypeReference<T>(type) {
+            });
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * http请求
+     *
+     * @param url   url
+     * @param param 参数
+     * @return
+     */
+    public static String httpRequest(String url, Map<String, String> param) {
         String result = "";
         BufferedReader in = null;
         StringBuilder builder = new StringBuilder(url);
         try {
             // append params
-            if(param != null && param.size() > 0) {
+            if (param != null && param.size() > 0) {
                 builder.append("?");
-                for(String key : param.keySet()) {
+                for (String key : param.keySet()) {
                     builder.append(key).append("=").append(param.get(key)).append("&");
                 }
-                builder.substring(0, builder.length()-1);
+                builder.substring(0, builder.length() - 1);
             }
             // request
             URL realUrl = new URL(builder.toString());
@@ -53,12 +99,11 @@ public class HttpUtil {
                 PluginManager.getLogger().error(e2);
             }
         }
-        // convert json to object
-        if(StringUtils.isNotBlank(result)) {
-            return JSON.parseObject(result, new TypeReference<List<T>>(type) {});
-        } else {
-            return null;
-        }
+        return result;
     }
 
+    public static <T> List<T> page(String url, Map<String, String> param, Class<T> type, PageHelper pageHelper) {
+        final List<T> allList = HttpUtil.httpGetList(url, param, type);
+        return pageHelper.query(allList);
+    }
 }

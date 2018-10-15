@@ -4,13 +4,11 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -36,13 +34,12 @@ public class V2exWindow implements ToolWindowFactory {
     // ui component
     private ToolWindow toolWindow;
     private JTabbedPane tabbedPane1;
-    private JButton button1;
-    private JButton button2;
     private JPanel latestPanel;
     private JPanel hotPanel;
     private JPanel nodePanel;
     private JPanel panelContent;
-    private JList list1;
+    private JToolBar toolBar;
+
 
     public V2exWindow() {
     }
@@ -60,6 +57,7 @@ public class V2exWindow implements ToolWindowFactory {
     @Override
     public void init(ToolWindow window) {
         initParams();
+        initPanel();
     }
 
     @Override
@@ -117,32 +115,29 @@ public class V2exWindow implements ToolWindowFactory {
     }
 
     private void initToolBar() {
-        jToolBar = new JToolBar();
-        jToolBar.setFloatable(true);
-        jToolBar.setOrientation(SwingConstants.VERTICAL);
-        jToolBar.add(new AbstractAction("refresh", AllIcons.Actions.Refresh) {
+        toolBar.setFloatable(true);
+        toolBar.setOrientation(SwingConstants.VERTICAL);
+        toolBar.add(new AbstractAction("refresh", AllIcons.Actions.Refresh) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO
             }
         });
-        jToolBar.add(new AbstractAction("back", AllIcons.Actions.Back) {
+        toolBar.add(new AbstractAction("back", AllIcons.Actions.Back) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO
             }
         });
-        jToolBar.add(new AbstractAction("forward", AllIcons.Actions.Forward) {
+        toolBar.add(new AbstractAction("forward", AllIcons.Actions.Forward) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO
             }
         });
-        toolWindowContent.add(jToolBar, BorderLayout.WEST);
     }
 
     private void initTabbedpanel() {
-        tabbedPane = new JBTabbedPane();
-        toolWindowContent.add(tabbedPane, BorderLayout.CENTER);
+
     }
 }
