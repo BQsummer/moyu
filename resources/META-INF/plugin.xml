@@ -26,6 +26,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <toolWindow id="v2ex window" anchor="bottom" secondary="true" factoryClass="toolWindow.v2ex.V2exWindow"/>
+    <applicationService serviceInterface="common.PersistentState" serviceImplementation="common.PersistentState"/>
   </extensions>
 
   <actions>

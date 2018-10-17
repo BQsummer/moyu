@@ -1,11 +1,14 @@
 package toolWindow.v2ex;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import common.PersistentState;
+import common.PluginConf;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -15,6 +18,8 @@ import java.awt.event.ActionEvent;
  * v2ex的toolWindow
  */
 public class V2exWindow implements ToolWindowFactory {
+
+    private static final Logger log = Logger.getInstance("moyu");
 
     /**
      * 最新话题的页数
@@ -74,6 +79,7 @@ public class V2exWindow implements ToolWindowFactory {
         lastPanelPage = 0;
         hotPanelPage = 0;
         nodePanelName = "";
+        PersistentState.getInstance().set(PluginConf.V2EX_NAME, "bqsummer");
     }
 
     private void fresh(int selectedPanelIndex) {
@@ -115,6 +121,8 @@ public class V2exWindow implements ToolWindowFactory {
     }
 
     private void initToolBar() {
+        log.error(PersistentState.getInstance().get(PluginConf.V2EX_NAME));
+        System.out.println(PersistentState.getInstance().get(PluginConf.V2EX_NAME));
         toolBar.setFloatable(true);
         toolBar.setOrientation(SwingConstants.VERTICAL);
         toolBar.add(new AbstractAction("refresh", AllIcons.Actions.Refresh) {

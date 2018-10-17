@@ -1,26 +1,39 @@
 package common;
 
-import java.util.ArrayList;
-
 /**
  * 全局设置
  */
-public class PluginConf {
+public enum PluginConf {
 
-    private static PluginConf instance;
+    V2EX_NAME("v2ex_name", String.class),
 
-    private ArrayList<Integer> followedTopic;
+    V2EX_FOLLOW_LIST("v2ex_follow_list", String[].class);
 
-    private PluginConf(){}
+    String key;
 
-    public static synchronized PluginConf getInstance(){
-        if(instance == null){
-            instance = new PluginConf();
-        }
-        return instance;
+    Class type;
+
+    PluginConf() {
     }
 
-    public static void setInstance(PluginConf instance) {
-        PluginConf.instance = instance;
+    PluginConf(String key, Class type) {
+        this.key = key;
+        this.type = type;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public Class getType() {
+        return type;
+    }
+
+    public void setType(Class type) {
+        this.type = type;
     }
 }
