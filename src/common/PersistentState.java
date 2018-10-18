@@ -17,7 +17,7 @@ public class PersistentState implements PersistentStateComponent<Element> {
 
     private Element element;
 
-    public PersistentState() {
+    private PersistentState() {
     }
 
     public static PersistentState getInstance() {

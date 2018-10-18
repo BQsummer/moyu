@@ -7,8 +7,6 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import common.PersistentState;
-import common.PluginConf;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -21,30 +19,14 @@ public class V2exWindow implements ToolWindowFactory {
 
     private static final Logger log = Logger.getInstance("moyu");
 
-    /**
-     * 最新话题的页数
-     */
-    private int lastPanelPage;
-
-    /**
-     * 最热话题的页数
-     */
-    private int hotPanelPage;
-
-    /**
-     * 节点的名字
-     */
-    private String nodePanelName;
-
     // ui component
     private ToolWindow toolWindow;
     private JTabbedPane tabbedPane1;
-    private JPanel latestPanel;
-    private JPanel hotPanel;
-    private JPanel nodePanel;
     private JPanel panelContent;
     private JToolBar toolBar;
-
+    private LatestTopicPanel latestTopicPanel = new LatestTopicPanel();
+    private HotTopicPanel hotTopicPanel = new HotTopicPanel();
+    private FollowedTopicPanel followedTopicPanel = new FollowedTopicPanel();
 
     public V2exWindow() {
     }
@@ -56,12 +38,10 @@ public class V2exWindow implements ToolWindowFactory {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content = contentFactory.createContent(panelContent, "", false);
         toolWindow.getContentManager().addContent(content);
-
     }
 
     @Override
     public void init(ToolWindow window) {
-        initParams();
         initPanel();
     }
 
@@ -75,54 +55,19 @@ public class V2exWindow implements ToolWindowFactory {
         return false;
     }
 
-    private void initParams() {
-        lastPanelPage = 0;
-        hotPanelPage = 0;
-        nodePanelName = "";
-        PersistentState.getInstance().set(PluginConf.V2EX_NAME, "bqsummer");
-    }
 
-    private void fresh(int selectedPanelIndex) {
-        switch(selectedPanelIndex) {
-            // latestPanel
-            case 0 : {
-                freshLatestPanel();
-                break;
-            }
-            // hotPanel
-            case 1: {
-                freshHotPanel();
-                break;
-            }
-            // nodePanel
-            case 2 :  {
-                freshNodePanel();
-                break;
-            }
-        }
-    }
-
-    private void freshLatestPanel() {
-        // TODO
-    }
-
-    private void freshHotPanel() {
-        // TODO
-    }
-
-    private void freshNodePanel() {
-        // TODO
-    }
-
+    /**
+     * 初始化panel
+     */
     private void initPanel() {
         initToolBar();
-        initTabbedpanel();
-
+        initTabbedPanel();
     }
 
+    /**
+     * 初始化toolbar
+     */
     private void initToolBar() {
-        log.error(PersistentState.getInstance().get(PluginConf.V2EX_NAME));
-        System.out.println(PersistentState.getInstance().get(PluginConf.V2EX_NAME));
         toolBar.setFloatable(true);
         toolBar.setOrientation(SwingConstants.VERTICAL);
         toolBar.add(new AbstractAction("refresh", AllIcons.Actions.Refresh) {
@@ -145,7 +90,9 @@ public class V2exWindow implements ToolWindowFactory {
         });
     }
 
-    private void initTabbedpanel() {
-
+    private void initTabbedPanel() {
+        tabbedPane1.addTab("Latest Topic", latestTopicPanel);
+        tabbedPane1.addTab("Hot Topic", hotTopicPanel);
+        tabbedPane1.addTab("Followed Topic", followedTopicPanel);
     }
 }
