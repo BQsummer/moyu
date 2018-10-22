@@ -28,6 +28,9 @@ public class PageHelper {
             this.page = 1;
         }
         int startRow = (this.page - 1) * this.rows;
+        if (startRow > list.size()) {
+            startRow = list.size();
+        }
         int endRow = this.page * this.rows;
         if (endRow > list.size()) {
             endRow = list.size();

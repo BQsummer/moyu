@@ -2,46 +2,151 @@ package toolWindow.v2ex;
 
 import com.intellij.openapi.diagnostic.Logger;
 import common.Contract;
+import common.PersistentState;
+import common.PluginConf;
+import model.v2ex.Reply;
 import model.v2ex.Topic;
+import toolWindow.v2ex.panel.V2exGridBagConstraints;
+import toolWindow.v2ex.panel.V2exPanel;
 import util.HttpUtil;
 import util.PageHelper;
+import util.TopicUtil;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class FollowedTopicPanel extends JPanel implements V2exPanel {
 
     private static final Logger log = Logger.getInstance("moyu");
 
-    private Integer currentFollowedTopicId;
+    private Integer topFollowedId;
 
-    public FollowedTopicPanel(FlowLayout flowLayout) {
-        super(flowLayout);
-        fresh();
+    private List<Topic> topicList = null;
+
+    private List<Reply> replyList = null;
+
+    private Topic selectedTopic = null;
+
+    private JScrollPane scrollPane2 = null;
+
+    private int currentPage = 1;
+
+    private boolean isLast = false;
+
+    public FollowedTopicPanel(LayoutManager layoutManager) {
+        super(layoutManager);
+        init();
+    }
+
+    @Override
+    public void init() {
+        Object obj = PersistentState.getInstance().get(PluginConf.V2EX_FOLLOW_LIST);
+        if (obj != null) {
+            String[] followedTopic = (String[]) obj;
+            if (followedTopic.length > 0) {
+                try {
+                    topFollowedId = Integer.parseInt(followedTopic[0]);
+                } catch (NumberFormatException e) {
+                    log.error("format followed topic id failed", e);
+                }
+            }
+        }
+
+        if (topFollowedId != null) {
+            Map<String, String> params = new HashMap<>();
+            params.put("node_id", topFollowedId + "");
+
+            // topic list
+            topicList = HttpUtil.page(Contract.V2EX_TOPIC_API, params, Topic.class, new PageHelper(currentPage, 10));
+            if (topicList == null || topicList.size() == 0) {
+                isLast = true;
+                currentPage--;
+            }
+            ListModel listModel = new AbstractListModel() {
+                @Override
+                public int getSize() {
+                    return topicList.size();
+                }
+
+                @Override
+                public Object getElementAt(int index) {
+                    return TopicUtil.generateTitleInfo(topicList.get(index));
+                }
+            };
+            JList<String> listPanel = new JList<>(listModel);
+            listPanel.addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent arg0) {
+                    if (!arg0.getValueIsAdjusting()) {
+                        selectedTopic = topicList.get(listPanel.getSelectedIndex());
+                        Map<String, String> detailParams = new HashMap<>();
+                        detailParams.put("topic_id", selectedTopic.getId() + "");
+                        replyList = HttpUtil.page(Contract.V2EX_REPLY_API, detailParams, Reply.class, new PageHelper(1, Integer.MAX_VALUE));
+                    }
+                }
+            });
+            JScrollPane scrollPane = new JScrollPane(listPanel);
+            this.add(scrollPane, new V2exGridBagConstraints(0, 0, 30, 100));
+
+            // topic detail
+            if (listPanel.getSelectedIndex() == -1) {
+                if (topicList != null && topicList.size() > 0) {
+                    selectedTopic = topicList.get(0);
+                }
+            } else {
+                if (listPanel.getSelectedIndex() < topicList.size()) {
+                    selectedTopic = topicList.get(listPanel.getSelectedIndex());
+                }
+            }
+            if (selectedTopic != null) {
+                Map<String, String> detailParams = new HashMap<>();
+                detailParams.put("topic_id", selectedTopic.getId() + "");
+                replyList = HttpUtil.page(Contract.V2EX_REPLY_API, detailParams, Reply.class, new PageHelper(1, Integer.MAX_VALUE));
+                ListModel detailModel = new AbstractListModel() {
+                    @Override
+                    public int getSize() {
+                        return replyList.size() + 2;
+                    }
+
+                    @Override
+                    public Object getElementAt(int index) {
+                        if (index == 0) {
+                            return selectedTopic.getContent();
+                        } else if (index == 1) {
+                            return TopicUtil.generateTopicInfo(selectedTopic);
+                        } else {
+                            return TopicUtil.generateReplyInfo(replyList.get(index - 2));
+                        }
+                    }
+                };
+                JList<String> detailPanel = new JList<>(detailModel);
+                scrollPane2 = new JScrollPane(detailPanel);
+                this.add(scrollPane2, new V2exGridBagConstraints(1, 0, 70, 100));
+            }
+        }
     }
 
     @Override
     public void fresh() {
-        if (currentFollowedTopicId != null) {
-            Map<String, String> params = new HashMap<>();
-            params.put("node_id", currentFollowedTopicId + "");
-            List<Topic> topicList = HttpUtil.page(Contract.V2EX_TOPIC_API, null, Topic.class, new PageHelper(currentPage, 10));
-            JList<String> listPanel = new JList<>();
-            List<String> titles = topicList.stream().map(Topic::getTitle).collect(Collectors.toList());
-            listPanel.setListData(titles.toArray(new String[titles.size()]));
-            this.add(listPanel);
+
+    }
+
+    public void prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            init();
         }
     }
 
-    public Integer getCurrentFollowedTopicId() {
-        return currentFollowedTopicId;
-    }
-
-    public void setCurrentFollowedTopicId(Integer currentFollowedTopicId) {
-        this.currentFollowedTopicId = currentFollowedTopicId;
+    public void nextPage() {
+        if (!isLast) {
+            currentPage++;
+            init();
+        }
     }
 }

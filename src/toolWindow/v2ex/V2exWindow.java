@@ -7,8 +7,6 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import common.PersistentState;
-import common.PluginConf;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -27,9 +25,9 @@ public class V2exWindow implements ToolWindowFactory {
     private JTabbedPane tabbedPane1;
     private JPanel panelContent;
     private JToolBar toolBar;
-    private LatestTopicPanel latestTopicPanel = new LatestTopicPanel(new FlowLayout(FlowLayout.LEFT));
-    private HotTopicPanel hotTopicPanel = new HotTopicPanel(new FlowLayout(FlowLayout.LEFT));
-    private FollowedTopicPanel followedTopicPanel = new FollowedTopicPanel(new FlowLayout(FlowLayout.LEFT));
+    private LatestTopicPanel latestTopicPanel = new LatestTopicPanel(new GridBagLayout());
+    private HotTopicPanel hotTopicPanel = new HotTopicPanel(new GridBagLayout());
+    private FollowedTopicPanel followedTopicPanel = new FollowedTopicPanel(new GridBagLayout());
 
     public V2exWindow() {
     }
@@ -82,13 +80,35 @@ public class V2exWindow implements ToolWindowFactory {
         toolBar.add(new AbstractAction("back", AllIcons.Actions.Back) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                if (tabbedPane1.getSelectedIndex() == 0) {
+                    latestTopicPanel.prevPage();
+                    return;
+                }
+                if (tabbedPane1.getSelectedIndex() == 1) {
+                    hotTopicPanel.prevPage();
+                    return;
+                }
+                if (tabbedPane1.getSelectedIndex() == 2) {
+                    followedTopicPanel.prevPage();
+                    return;
+                }
             }
         });
         toolBar.add(new AbstractAction("forward", AllIcons.Actions.Forward) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                if (tabbedPane1.getSelectedIndex() == 0) {
+                    latestTopicPanel.nextPage();
+                    return;
+                }
+                if (tabbedPane1.getSelectedIndex() == 1) {
+                    hotTopicPanel.nextPage();
+                    return;
+                }
+                if (tabbedPane1.getSelectedIndex() == 2) {
+                    followedTopicPanel.nextPage();
+                    return;
+                }
             }
         });
     }
@@ -96,23 +116,7 @@ public class V2exWindow implements ToolWindowFactory {
     private void initTabbedPanel() {
         tabbedPane1.addTab("Latest Topic", latestTopicPanel);
         tabbedPane1.addTab("Hot Topic", hotTopicPanel);
-        getFollowedTopic();
         tabbedPane1.addTab("Followed Topic", followedTopicPanel);
     }
 
-    private void getFollowedTopic() {
-        Object obj = PersistentState.getInstance().get(PluginConf.V2EX_FOLLOW_LIST);
-        log.info("1. " + obj.toString());
-        if (obj != null) {
-            log.info("2. " + obj);
-            String[] followedTopic = (String[]) obj;
-            if (followedTopic.length > 0) {
-                try {
-                    followedTopicPanel.setCurrentFollowedTopicId(Integer.parseInt(followedTopic[0]));
-                } catch (NumberFormatException e) {
-                    log.error("format followed topic id failed", e);
-                }
-            }
-        }
-    }
 }
