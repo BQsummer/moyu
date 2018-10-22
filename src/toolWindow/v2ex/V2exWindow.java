@@ -7,9 +7,12 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import common.PersistentState;
+import common.PluginConf;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -24,9 +27,9 @@ public class V2exWindow implements ToolWindowFactory {
     private JTabbedPane tabbedPane1;
     private JPanel panelContent;
     private JToolBar toolBar;
-    private LatestTopicPanel latestTopicPanel = new LatestTopicPanel();
-    private HotTopicPanel hotTopicPanel = new HotTopicPanel();
-    private FollowedTopicPanel followedTopicPanel = new FollowedTopicPanel();
+    private LatestTopicPanel latestTopicPanel = new LatestTopicPanel(new FlowLayout(FlowLayout.LEFT));
+    private HotTopicPanel hotTopicPanel = new HotTopicPanel(new FlowLayout(FlowLayout.LEFT));
+    private FollowedTopicPanel followedTopicPanel = new FollowedTopicPanel(new FlowLayout(FlowLayout.LEFT));
 
     public V2exWindow() {
     }
@@ -93,6 +96,23 @@ public class V2exWindow implements ToolWindowFactory {
     private void initTabbedPanel() {
         tabbedPane1.addTab("Latest Topic", latestTopicPanel);
         tabbedPane1.addTab("Hot Topic", hotTopicPanel);
+        getFollowedTopic();
         tabbedPane1.addTab("Followed Topic", followedTopicPanel);
+    }
+
+    private void getFollowedTopic() {
+        Object obj = PersistentState.getInstance().get(PluginConf.V2EX_FOLLOW_LIST);
+        log.info("1. " + obj.toString());
+        if (obj != null) {
+            log.info("2. " + obj);
+            String[] followedTopic = (String[]) obj;
+            if (followedTopic.length > 0) {
+                try {
+                    followedTopicPanel.setCurrentFollowedTopicId(Integer.parseInt(followedTopic[0]));
+                } catch (NumberFormatException e) {
+                    log.error("format followed topic id failed", e);
+                }
+            }
+        }
     }
 }

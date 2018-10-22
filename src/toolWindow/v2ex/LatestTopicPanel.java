@@ -6,13 +6,15 @@ import util.HttpUtil;
 import util.PageHelper;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class LatestTopicPanel extends JPanel implements V2exPanel {
 
-    public LatestTopicPanel() {
-        fresh();
+    public LatestTopicPanel(FlowLayout flowLayout) {
+        super(flowLayout);
+        this.fresh();
     }
 
     @Override

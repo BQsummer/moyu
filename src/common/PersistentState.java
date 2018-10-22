@@ -4,6 +4,7 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.diagnostic.Logger;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,8 @@ import java.util.List;
 
 @State(name = "moyu", storages = {@Storage("moyuConfig.xml")})
 public class PersistentState implements PersistentStateComponent<Element> {
+
+    private static final Logger log = Logger.getInstance("moyu");
 
     private String VALUE_NAME = "value";
 
@@ -51,6 +54,15 @@ public class PersistentState implements PersistentStateComponent<Element> {
     public Object get(PluginConf conf) {
         Class clz = conf.getType();
         Element specialEle = element.getChild(conf.getKey());
+        log.info("4. ");
+        if (specialEle == null) {
+            log.info("5. ");
+            if (conf.getDefaultVal() != null) {
+                log.info("6. " + conf.getDefaultVal());
+                return conf.getDefaultVal();
+            }
+            return null;
+        }
         List<Element> contentList = specialEle.getChildren();
         if (contentList != null && contentList.size() > 0) {
             if (contentList.size() > 1) {
