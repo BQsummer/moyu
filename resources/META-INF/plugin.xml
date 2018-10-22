@@ -25,7 +25,7 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="v2ex_window"  anchor="right" factoryClass="toolWindow.v2ex.V2exWindow"/>
+    <toolWindow id="wechat window" anchor="bottom" factoryClass="toolWindow.wechat.WechatWindow"/>
   </extensions>
 
   <actions>
