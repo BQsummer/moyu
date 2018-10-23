@@ -7,11 +7,17 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import common.Contract;
 import org.jetbrains.annotations.NotNull;
+import toolWindow.v2ex.panel.V2exPanel;
+import toolWindow.v2ex.panel.tabbed.FollowedTopicPanel;
+import toolWindow.v2ex.panel.tabbed.HotTopicPanel;
+import toolWindow.v2ex.panel.tabbed.LatestTopicPanel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * v2ex的toolWindow
@@ -25,9 +31,10 @@ public class V2exWindow implements ToolWindowFactory {
     private JTabbedPane tabbedPane1;
     private JPanel panelContent;
     private JToolBar toolBar;
-    private LatestTopicPanel latestTopicPanel = new LatestTopicPanel(new GridBagLayout());
-    private HotTopicPanel hotTopicPanel = new HotTopicPanel(new GridBagLayout());
-    private FollowedTopicPanel followedTopicPanel = new FollowedTopicPanel(new GridBagLayout());
+    private LatestTopicPanel latestTopicPanel = new LatestTopicPanel(Contract.V2EX_LATEST_API);
+    private HotTopicPanel hotTopicPanel = new HotTopicPanel(Contract.V2EX_HOT_API);
+    private FollowedTopicPanel followedTopicPanel = new FollowedTopicPanel(Contract.V2EX_TOPIC_API);
+    private List<V2exPanel> panelList = new ArrayList<>();
 
     public V2exWindow() {
     }
@@ -80,35 +87,13 @@ public class V2exWindow implements ToolWindowFactory {
         toolBar.add(new AbstractAction("back", AllIcons.Actions.Back) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (tabbedPane1.getSelectedIndex() == 0) {
-                    latestTopicPanel.prevPage();
-                    return;
-                }
-                if (tabbedPane1.getSelectedIndex() == 1) {
-                    hotTopicPanel.prevPage();
-                    return;
-                }
-                if (tabbedPane1.getSelectedIndex() == 2) {
-                    followedTopicPanel.prevPage();
-                    return;
-                }
+                panelList.get(tabbedPane1.getSelectedIndex()).prevPage();
             }
         });
         toolBar.add(new AbstractAction("forward", AllIcons.Actions.Forward) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (tabbedPane1.getSelectedIndex() == 0) {
-                    latestTopicPanel.nextPage();
-                    return;
-                }
-                if (tabbedPane1.getSelectedIndex() == 1) {
-                    hotTopicPanel.nextPage();
-                    return;
-                }
-                if (tabbedPane1.getSelectedIndex() == 2) {
-                    followedTopicPanel.nextPage();
-                    return;
-                }
+                panelList.get(tabbedPane1.getSelectedIndex()).nextPage();
             }
         });
     }
@@ -117,6 +102,11 @@ public class V2exWindow implements ToolWindowFactory {
         tabbedPane1.addTab("Latest Topic", latestTopicPanel);
         tabbedPane1.addTab("Hot Topic", hotTopicPanel);
         tabbedPane1.addTab("Followed Topic", followedTopicPanel);
+        panelList.addAll(new ArrayList<V2exPanel>() {{
+            add(latestTopicPanel);
+            add(hotTopicPanel);
+            add(followedTopicPanel);
+        }});
     }
 
 }
