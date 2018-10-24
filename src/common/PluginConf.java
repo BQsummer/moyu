@@ -7,7 +7,7 @@ public enum PluginConf {
 
     V2EX_NAME("v2ex_name", String.class, null),
 
-    V2EX_FOLLOW_LIST("v2ex_follow_list", String[].class, new String[]{"63"});
+    V2EX_FOLLOW_LIST("v2ex_follow_list", String[].class, new String[]{"java"});
 
     String key;
 

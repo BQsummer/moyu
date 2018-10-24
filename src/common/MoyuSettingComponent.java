@@ -7,8 +7,8 @@ import com.intellij.openapi.ui.ComboBox;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import toolWindow.setting.V2exSettingPanel;
-import toolWindow.setting.WechatSettingPanel;
+import toolWindow.setting.V2exConfigPanel;
+import toolWindow.setting.WechatConfigPanel;
 
 import javax.swing.*;
 
@@ -16,9 +16,9 @@ public class MoyuSettingComponent implements SearchableConfigurable {
 
     private JTabbedPane settingPanel = new JTabbedPane();
 
-    private V2exSettingPanel v2exSettingPanel = new V2exSettingPanel();
+    private V2exConfigPanel v2exSettingPanel = new V2exConfigPanel();
 
-    private WechatSettingPanel wechatSettingPanel = new WechatSettingPanel();
+    private WechatConfigPanel wechatSettingPanel = new WechatConfigPanel();
 
 
     @NotNull
@@ -74,8 +74,8 @@ public class MoyuSettingComponent implements SearchableConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        settingPanel.addTab("v2ex", v2exSettingPanel);
-        settingPanel.addTab("wechat", wechatSettingPanel);
+        settingPanel.addTab("v2ex", v2exSettingPanel.getPanel());
+        settingPanel.addTab("wechat", wechatSettingPanel.getPanel());
         return settingPanel;
     }
 

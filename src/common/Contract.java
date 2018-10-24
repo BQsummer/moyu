@@ -12,5 +12,7 @@ public class Contract {
 
     public static final String V2EX_NODE_ID = "node_id";
 
+    public static final String V2EX_NODE_NAME = "node_name";
+
     public static final String V2EX_TOPIC_ID = "topic_id";
 }

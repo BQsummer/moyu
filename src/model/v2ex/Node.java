@@ -14,7 +14,7 @@ public class Node {
 
     private String url;
 
-    private String topis;
+    private Long topics;
 
     private String footer;
 
@@ -67,12 +67,12 @@ public class Node {
         this.url = url;
     }
 
-    public String getTopis() {
-        return topis;
+    public Long getTopics() {
+        return topics;
     }
 
-    public void setTopis(String topis) {
-        this.topis = topis;
+    public void setTopics(Long topics) {
+        this.topics = topics;
     }
 
     public String getFooter() {

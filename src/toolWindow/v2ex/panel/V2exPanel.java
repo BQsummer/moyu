@@ -73,11 +73,15 @@ public abstract class V2exPanel extends JPanel {
     public V2exPanel(String topicApi) {
         super(new GridBagLayout());
         this.topicApi = topicApi;
+
+        scrollPane = new JScrollPane(listPanel);
+        scrollPane2 = new JScrollPane(detailPanel);
+        this.add(scrollPane, new V2exGridBagConstraints(0, 0, 30.0, 100.0));
+        this.add(scrollPane2, new V2exGridBagConstraints(1, 0, 70.0, 100.0));
+
         if (isInit()) {
             init();
         }
-        this.add(scrollPane, new V2exGridBagConstraints(0, 0, 30, 100));
-        this.add(scrollPane2, new V2exGridBagConstraints(1, 0, 70, 100));
     }
 
     /**
@@ -85,8 +89,6 @@ public abstract class V2exPanel extends JPanel {
      */
     public void init() {
         fresh();
-        scrollPane = new JScrollPane(listPanel);
-        scrollPane2 = new JScrollPane(detailPanel);
     }
 
 
@@ -96,8 +98,8 @@ public abstract class V2exPanel extends JPanel {
     public void prevPage() {
         if (currentPage > 1) {
             currentPage--;
-            fresh();
         }
+        fresh();
     }
 
     /**
@@ -106,8 +108,8 @@ public abstract class V2exPanel extends JPanel {
     public void nextPage() {
         if (!isLast) {
             currentPage++;
-            fresh();
         }
+        fresh();
     }
 
     /**
@@ -130,7 +132,8 @@ public abstract class V2exPanel extends JPanel {
         topicList = HttpUtil.page(topicApi, params, Topic.class, new PageHelper(currentPage, 10));
         if (topicList == null || topicList.size() == 0) {
             isLast = true;
-            currentPage--;
+        } else {
+            isLast = false;
         }
         // 创建topic的listmodel
         ListModel listModel = new AbstractListModel() {
@@ -192,8 +195,11 @@ public abstract class V2exPanel extends JPanel {
                     detailParams.put(Contract.V2EX_TOPIC_ID, selectedTopic.getId() + "");
                     replyList = HttpUtil.page(Contract.V2EX_REPLY_API, detailParams, Reply.class, new PageHelper(1, Integer.MAX_VALUE));
                     detailPanel.setModel(detailModel);
+                    this.updateUI();
                 }
             }
         });
+
+        this.updateUI();
     }
 }

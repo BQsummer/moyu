@@ -21,7 +21,7 @@ public class FollowedTopicPanel extends V2exPanel {
             String[] followedTopicIdArr = (String[]) obj;
             if (followedTopicIdArr.length > 0) {
                 Map<String, String> param = new HashMap<>();
-                param.put(Contract.V2EX_NODE_ID, followedTopicIdArr[0]);
+                param.put(Contract.V2EX_NODE_NAME, followedTopicIdArr[0]);
                 this.setParams(param);
                 return true;
             }

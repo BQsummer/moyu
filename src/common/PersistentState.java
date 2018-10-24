@@ -54,11 +54,8 @@ public class PersistentState implements PersistentStateComponent<Element> {
     public Object get(PluginConf conf) {
         Class clz = conf.getType();
         Element specialEle = element.getChild(conf.getKey());
-        log.info("4. ");
         if (specialEle == null) {
-            log.info("5. ");
             if (conf.getDefaultVal() != null) {
-                log.info("6. " + conf.getDefaultVal());
                 return conf.getDefaultVal();
             }
             return null;
