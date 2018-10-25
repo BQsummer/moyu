@@ -11,6 +11,8 @@ import toolWindow.setting.V2exConfigPanel;
 import toolWindow.setting.WechatConfigPanel;
 
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.List;
 
 public class MoyuSettingComponent implements SearchableConfigurable {
 
@@ -96,7 +98,9 @@ public class MoyuSettingComponent implements SearchableConfigurable {
      */
     @Override
     public void apply() throws ConfigurationException {
-
+        // save followed node list
+        List<String> followedNodeList = v2exSettingPanel.getFollowedNodeList();
+        PersistentState.getInstance().set(PluginConf.V2EX_FOLLOW_LIST, followedNodeList);
     }
 
     /**
@@ -104,7 +108,13 @@ public class MoyuSettingComponent implements SearchableConfigurable {
      */
     @Override
     public void reset() {
-
+        // reset v2ex setting
+        Object obj = PersistentState.getInstance().get(PluginConf.V2EX_FOLLOW_LIST);
+        if (obj != null) {
+            String[] followed = (String[]) obj;
+            this.v2exSettingPanel.setFollowedNodeList(Arrays.asList(followed));
+        }
+        this.v2exSettingPanel.reset();
     }
 
     @Override

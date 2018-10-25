@@ -10,6 +10,8 @@ public class Contract {
 
     public static final String V2EX_REPLY_API = "https://www.v2ex.com/api/replies/show.json";
 
+    public static final String V2EX_NODE_API = "https://www.v2ex.com/api/nodes/show.json";
+
     public static final String V2EX_NODE_ID = "node_id";
 
     public static final String V2EX_NODE_NAME = "node_name";
