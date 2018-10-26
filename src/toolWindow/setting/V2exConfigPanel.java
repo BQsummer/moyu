@@ -1,18 +1,16 @@
 package toolWindow.setting;
 
 import com.intellij.icons.AllIcons;
-import common.Contract;
 import common.PersistentState;
 import common.PluginConf;
 import model.v2ex.Node;
 import util.CollectionUtil;
-import util.HttpUtil;
-import util.PageHelper;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class V2exConfigPanel {
@@ -75,10 +73,7 @@ public class V2exConfigPanel {
             public void actionPerformed(ActionEvent e) {
                 String key = input.getText();
                 if (key != null && key.length() > 0) {
-                    Map<String, String> params = new HashMap<String, String>() {{
-                        this.put("name", key);
-                    }};
-                    nodeList = HttpUtil.page(Contract.V2EX_NODE_API, params, Node.class, new PageHelper(1, 10));
+                    nodeList = CollectionUtil.searchNode(key);
                     if (nodeList != null && nodeList.size() > 0) {
                         ListModel detailModel = new AbstractListModel() {
                             @Override

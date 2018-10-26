@@ -8,11 +8,14 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import common.Contract;
+import model.v2ex.Node;
 import org.jetbrains.annotations.NotNull;
 import toolWindow.v2ex.panel.V2exPanel;
 import toolWindow.v2ex.panel.tabbed.FollowedTopicPanel;
 import toolWindow.v2ex.panel.tabbed.HotTopicPanel;
 import toolWindow.v2ex.panel.tabbed.LatestTopicPanel;
+import util.HttpUtil;
+import util.PageHelper;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -98,6 +101,9 @@ public class V2exWindow implements ToolWindowFactory {
         });
     }
 
+    /**
+     * 初始化tabbed panel
+     */
     private void initTabbedPanel() {
         tabbedPane1.addTab("Latest Topic", latestTopicPanel);
         tabbedPane1.addTab("Hot Topic", hotTopicPanel);
@@ -109,4 +115,11 @@ public class V2exWindow implements ToolWindowFactory {
         }});
     }
 
+    /**
+     * 获取v2ex所有节点信息，给setting提供查询
+     */
+    private void initAllNode() {
+        List<Node> allNode = HttpUtil.page(Contract.V2EX_ALLNODE_API, null, Node.class, new PageHelper(1, Integer.MAX_VALUE));
+        Contract.setAllNode(allNode);
+    }
 }
