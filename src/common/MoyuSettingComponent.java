@@ -4,17 +4,24 @@ import com.intellij.ide.ui.UINumericRange;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import service.PersistentState;
 import toolWindow.setting.V2exConfigPanel;
 import toolWindow.setting.WechatConfigPanel;
+import toolWindow.v2ex.V2exWindow;
+import util.TopicUtil;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MoyuSettingComponent implements SearchableConfigurable {
+
+    private static boolean isCusModified = false;
 
     private JTabbedPane settingPanel = new JTabbedPane();
 
@@ -22,10 +29,8 @@ public class MoyuSettingComponent implements SearchableConfigurable {
 
     private WechatConfigPanel wechatSettingPanel = new WechatConfigPanel();
 
-
     @NotNull
     @Override
-
     public String getId() {
         return "moyu plugin";
     }
@@ -82,25 +87,31 @@ public class MoyuSettingComponent implements SearchableConfigurable {
     }
 
     /**
-     * ok apply是否可用
+     * apply是否可用
      *
-     * @return
+     * @return true or false
      */
     @Override
     public boolean isModified() {
-        return false;
+        return isCusModify();
     }
 
     /**
      * 提交
      *
-     * @throws ConfigurationException
+     * @throws ConfigurationException ConfigurationException
      */
     @Override
     public void apply() throws ConfigurationException {
         // save followed node list
         List<String> followedNodeList = v2exSettingPanel.getFollowedNodeList();
         PersistentState.getInstance().set(PluginConf.V2EX_FOLLOW_LIST, followedNodeList);
+
+        // 更新topic下拉框
+        V2exWindow toolWindow = (V2exWindow) ToolWindowManager.getInstance(V2exWindow.getInstance().getProject()).getToolWindow(V2exWindow.TOOL_WINDOW_ID);
+        toolWindow.setComoBoxContent(followedNodeList.toArray(new String[followedNodeList.size()]));
+
+        setCusModified(false);
     }
 
     /**
@@ -109,10 +120,11 @@ public class MoyuSettingComponent implements SearchableConfigurable {
     @Override
     public void reset() {
         // reset v2ex setting
-        Object obj = PersistentState.getInstance().get(PluginConf.V2EX_FOLLOW_LIST);
-        if (obj != null) {
-            String[] followed = (String[]) obj;
-            this.v2exSettingPanel.setFollowedNodeList(Arrays.asList(followed));
+        String[] followedTopicArr = TopicUtil.getFollowedTopic();
+        if (followedTopicArr != null) {
+            // List not support add() remove() method
+            List<String> topicList = Arrays.asList(followedTopicArr);
+            this.v2exSettingPanel.setFollowedNodeList(new ArrayList<>(topicList));
         }
         this.v2exSettingPanel.reset();
     }
@@ -125,4 +137,13 @@ public class MoyuSettingComponent implements SearchableConfigurable {
     private void initV2exSettingPanel() {
 
     }
+
+    public static boolean isCusModify() {
+        return isCusModified;
+    }
+
+    public static void setCusModified(boolean cusModified) {
+        isCusModified = cusModified;
+    }
+
 }

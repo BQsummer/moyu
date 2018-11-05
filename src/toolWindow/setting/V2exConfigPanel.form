@@ -57,7 +57,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="请输入想要follow的topic名字或id"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="deaaa" class="javax.swing.JList" binding="searchList">

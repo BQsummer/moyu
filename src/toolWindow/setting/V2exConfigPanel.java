@@ -1,10 +1,10 @@
 package toolWindow.setting;
 
 import com.intellij.icons.AllIcons;
-import common.PersistentState;
-import common.PluginConf;
+import common.MoyuSettingComponent;
 import model.v2ex.Node;
 import util.CollectionUtil;
+import util.TopicUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,19 +44,18 @@ public class V2exConfigPanel {
      * 显示已follow的topic
      */
     public void initFollowedPanel() {
-        Object obj = PersistentState.getInstance().get(PluginConf.V2EX_FOLLOW_LIST);
-        if (obj != null) {
-            String[] followedTopic = (String[]) obj;
-            followedNodeList.addAll(Arrays.asList(followedTopic));
+        String[] followedTopicArr = TopicUtil.getFollowedTopic();
+        if (followedTopicArr != null) {
+            followedNodeList.addAll(Arrays.asList(followedTopicArr));
             ListModel listModel = new AbstractListModel() {
                 @Override
                 public int getSize() {
-                    return followedTopic.length;
+                    return followedTopicArr.length;
                 }
 
                 @Override
                 public Object getElementAt(int index) {
-                    return followedTopic[index];
+                    return followedTopicArr[index];
                 }
             };
             followList.setModel(listModel);
@@ -83,7 +82,7 @@ public class V2exConfigPanel {
 
                             @Override
                             public Object getElementAt(int index) {
-                                return nodeList.get(index);
+                                return nodeList.get(index).getName();
                             }
                         };
                         searchList.setModel(detailModel);
@@ -110,6 +109,7 @@ public class V2exConfigPanel {
                 }
             }
         });
+        MoyuSettingComponent.setCusModified(true);
     }
 
     /**
@@ -166,7 +166,7 @@ public class V2exConfigPanel {
         return followedNodeList;
     }
 
-    public void setFollowedNodeList(List<String> followedNodeList) {
+    public void setFollowedNodeList(ArrayList<String> followedNodeList) {
         this.followedNodeList = followedNodeList;
     }
 

@@ -9,11 +9,11 @@ public enum PluginConf {
 
     V2EX_FOLLOW_LIST("v2ex_follow_list", String[].class, new String[]{"java"});
 
-    String key;
+    private String key;
 
-    Class type;
+    private Class type;
 
-    Object defaultVal;
+    private Object defaultVal;
 
     PluginConf() {
     }

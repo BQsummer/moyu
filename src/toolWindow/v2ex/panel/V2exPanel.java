@@ -33,12 +33,12 @@ public abstract class V2exPanel extends JPanel {
     /**
      * jscrollpane, 左侧topic栏
      */
-    private JScrollPane scrollPane = new JScrollPane();
+    private JScrollPane scrollPane;
 
     /**
      * jscrollpanel，右侧reply栏
      */
-    private JScrollPane scrollPane2 = new JScrollPane();
+    private JScrollPane scrollPane2;
 
     /**
      * 当前页数
@@ -127,7 +127,7 @@ public abstract class V2exPanel extends JPanel {
         this.params = params;
     }
 
-    private void fresh() {
+    public void fresh() {
         // 获取topic数据
         topicList = HttpUtil.page(topicApi, params, Topic.class, new PageHelper(currentPage, 10));
         if (topicList == null || topicList.size() == 0) {
@@ -201,5 +201,13 @@ public abstract class V2exPanel extends JPanel {
         });
 
         this.updateUI();
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 }

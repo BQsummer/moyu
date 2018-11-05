@@ -16,8 +16,10 @@ import toolWindow.v2ex.panel.tabbed.HotTopicPanel;
 import toolWindow.v2ex.panel.tabbed.LatestTopicPanel;
 import util.HttpUtil;
 import util.PageHelper;
+import util.TopicUtil;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +29,13 @@ import java.util.List;
  */
 public class V2exWindow implements ToolWindowFactory {
 
+    public static final String TOOL_WINDOW_ID = "v2ex window";
+
     private static final Logger log = Logger.getInstance("moyu");
 
     // ui component
     private ToolWindow toolWindow;
+    private Project project;
     private JTabbedPane tabbedPane1;
     private JPanel panelContent;
     private JToolBar toolBar;
@@ -38,14 +43,19 @@ public class V2exWindow implements ToolWindowFactory {
     private HotTopicPanel hotTopicPanel = new HotTopicPanel(Contract.V2EX_HOT_API);
     private FollowedTopicPanel followedTopicPanel = new FollowedTopicPanel(Contract.V2EX_TOPIC_API);
     private List<V2exPanel> panelList = new ArrayList<>();
+    private JComboBox<String> comboBox;
 
-    public V2exWindow() {
+    private static V2exWindow instance;
+
+    public static V2exWindow getInstance() {
+        return instance;
     }
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         // set toolWindow
         this.toolWindow = toolWindow;
+        this.project = project;
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content = contentFactory.createContent(panelContent, "", false);
         toolWindow.getContentManager().addContent(content);
@@ -99,6 +109,28 @@ public class V2exWindow implements ToolWindowFactory {
                 panelList.get(tabbedPane1.getSelectedIndex()).nextPage();
             }
         });
+        // followed topic 下拉框
+        String[] followedTopicArr = TopicUtil.getFollowedTopic();
+        setComoBoxContent(followedTopicArr);
+        toolBar.add(comboBox);
+    }
+
+    /**
+     * 设置下拉菜单的内容
+     *
+     * @param followed 下拉菜单中topic 的名称
+     */
+    public void setComoBoxContent(String[] followed) {
+        DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel(followed);
+        comboBox = new JComboBox<>(comboBoxModel);
+        comboBox.setPreferredSize(new Dimension(toolBar.getWidth(), 30));
+        comboBox.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                followedTopicPanel.freshTopic(comboBox.getSelectedItem().toString());
+            }
+        });
+        this.toolBar.updateUI();
     }
 
     /**
@@ -113,6 +145,7 @@ public class V2exWindow implements ToolWindowFactory {
             add(hotTopicPanel);
             add(followedTopicPanel);
         }});
+        initAllNode();
     }
 
     /**
@@ -122,4 +155,21 @@ public class V2exWindow implements ToolWindowFactory {
         List<Node> allNode = HttpUtil.page(Contract.V2EX_ALLNODE_API, null, Node.class, new PageHelper(1, Integer.MAX_VALUE));
         Contract.setAllNode(allNode);
     }
+
+    public JComboBox<String> getComboBox() {
+        return comboBox;
+    }
+
+    public void setComboBox(JComboBox<String> comboBox) {
+        this.comboBox = comboBox;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
 }

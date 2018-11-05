@@ -1,10 +1,11 @@
-package common;
+package service;
 
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.diagnostic.Logger;
+import common.PluginConf;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +53,14 @@ public class PersistentState implements PersistentStateComponent<Element> {
     }
 
     public Object get(PluginConf conf) {
-        Class clz = conf.getType();
+        Class oriClass = conf.getType();
+        Class clz;
+        // fix bug, eg.followed topic is array, but topic is stored in different element, it will throw exception when clz.cast(element.getText)
+        if (oriClass.isArray()) {
+            clz = oriClass.getComponentType();
+        } else {
+            clz = oriClass;
+        }
         Element specialEle = element.getChild(conf.getKey());
         if (specialEle == null) {
             if (conf.getDefaultVal() != null) {
@@ -71,7 +79,12 @@ public class PersistentState implements PersistentStateComponent<Element> {
                 return arr;
             } else {
                 Element element = contentList.get(0);
-                return clz.cast(element.getText());
+                Object firstObj = clz.cast(element.getText());
+                if (oriClass.isArray()) {
+                    return new Object[]{firstObj};
+                } else {
+                    return firstObj;
+                }
             }
         }
         return null;

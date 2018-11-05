@@ -61,7 +61,7 @@ public class HttpUtil {
      * @return
      */
     public static String httpRequest(String url, Map<String, String> param) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         BufferedReader in = null;
         StringBuilder builder = new StringBuilder(url);
         try {
@@ -84,7 +84,7 @@ public class HttpUtil {
                     connection.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
-                result += line;
+                result.append(line);
             }
         } catch (Exception e) {
             PluginManager.getLogger().error(e);
@@ -99,7 +99,7 @@ public class HttpUtil {
                 PluginManager.getLogger().error(e2);
             }
         }
-        return result;
+        return result.toString();
     }
 
     public static <T> List<T> page(String url, Map<String, String> param, Class<T> type, PageHelper pageHelper) {
